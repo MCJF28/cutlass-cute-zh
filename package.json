@@ -1,0 +1,32 @@
+{
+  "name": "cutlass-cute-zh",
+  "version": "1.0.0",
+  "description": "NVIDIA CUTLASS 3.x & CuTe 官方核心文档与架构指南（权威全量中文精译版）",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "keywords": [
+    "cutlass",
+    "cute",
+    "cuda",
+    "gpu",
+    "gemm",
+    "tensor-core",
+    "hpc",
+    "ai-compiler",
+    "flashattention"
+  ],
+  "author": "Antigravity & Open Source Community",
+  "license": "Apache-2.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  }
+}
