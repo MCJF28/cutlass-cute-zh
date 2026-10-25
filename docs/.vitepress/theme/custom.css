@@ -38,6 +38,7 @@
   margin-right: 1.5rem !important;
   display: flex !important;
   align-items: center !important;
+  flex-shrink: 0 !important;
 }
 
 .VPNavBar .title :deep(.title) {
@@ -88,6 +89,76 @@
   .VPNavBar.has-sidebar .content {
     padding-left: 0 !important;
     padding-right: 0 !important;
+  }
+}
+
+/* ==========================================================================
+   Search Bar Expansion - Make the search box spacious, prominent and elegant
+   ========================================================================== */
+.VPNavBarSearch {
+  display: flex !important;
+  align-items: center !important;
+}
+
+@media (min-width: 768px) {
+  .VPNavBarSearch {
+    padding-left: 0.75rem !important;
+    padding-right: 1.25rem !important;
+    flex-grow: 0 !important;
+  }
+
+  #local-search,
+  #docsearch {
+    width: auto !important;
+  }
+
+  .DocSearch-Button {
+    width: 280px !important;
+    min-width: 260px !important;
+    height: 38px !important;
+    padding: 0 12px 0 14px !important;
+    border-radius: 9px !important;
+    background-color: var(--vp-c-bg-alt) !important;
+    border: 1px solid var(--vp-c-divider) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .DocSearch-Button:hover {
+    border-color: var(--vp-c-brand-1) !important;
+    background-color: var(--vp-c-bg) !important;
+    box-shadow: 0 3px 12px rgba(37, 99, 235, 0.08) !important;
+  }
+
+  .DocSearch-Button .DocSearch-Button-Container {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .DocSearch-Button .DocSearch-Button-Placeholder {
+    font-size: 0.85rem !important;
+    color: var(--vp-c-text-2) !important;
+    padding-right: 0 !important;
+    display: inline-block !important;
+  }
+
+  .DocSearch-Button .DocSearch-Button-Keys {
+    display: flex !important;
+    align-items: center !important;
+    margin-left: 8px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .DocSearch-Button {
+    width: 320px !important; /* extra comfortable width on large desktop */
   }
 }
 

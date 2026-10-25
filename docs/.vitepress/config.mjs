@@ -99,7 +99,28 @@ export default defineConfig({
       copyright: 'Copyright © 2026 NVIDIA Corporation (Original) & AI Community Contributors'
     },
     search: {
-      provider: 'local'
+      provider: 'local',
+      options: {
+        locales: {
+          root: {
+            translations: {
+              button: {
+                buttonText: '搜索文档、算法与架构...',
+                buttonAriaLabel: '搜索文档'
+              },
+              modal: {
+                noResultsText: '未找到相关技术文档',
+                resetButtonTitle: '清除搜索',
+                footer: {
+                  selectText: '选择',
+                  navigateText: '切换',
+                  closeText: '关闭'
+                }
+              }
+            }
+          }
+        }
+      }
     },
     outline: {
       level: [2, 3],
