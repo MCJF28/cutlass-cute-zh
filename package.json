@@ -21,6 +21,7 @@
   ],
   "author": "Antigravity & Open Source Community",
   "license": "Apache-2.0",
+  "packageManager": "pnpm@9.15.4",
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
