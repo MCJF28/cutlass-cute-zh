@@ -4,7 +4,7 @@
     <button 
       class="hamburger-btn" 
       :class="{ 'is-active': isDrawerOpen }"
-      @click="toggleDrawer"
+      @click.stop.prevent="toggleDrawer"
       aria-label="切换文档导航菜单"
       title="切换文档导航菜单"
     >

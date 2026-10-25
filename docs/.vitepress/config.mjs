@@ -1,6 +1,8 @@
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 
-export default defineConfig({
+export default withMermaid(
+  defineConfig({
   title: "CUTLASS 3.x & CuTe 学习指南",
   description: "NVIDIA CUTLASS 3.x 与 CuTe 核心架构学习指南（AI 辅助汉化与深度解析版）",
   base: "/",
@@ -131,4 +133,4 @@ export default defineConfig({
       next: '下一篇'
     }
   }
-})
+}))

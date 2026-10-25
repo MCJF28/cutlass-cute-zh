@@ -14,7 +14,7 @@ export default {
   Layout() {
     return h(DefaultTheme.Layout, null, {
       'layout-top': () => h(WarningModal),
-      'nav-bar-content-before': () => h(HamburgerToggle)
+      'nav-bar-title-before': () => h(HamburgerToggle)
     })
   }
 }

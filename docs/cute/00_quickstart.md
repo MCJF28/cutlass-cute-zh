@@ -15,13 +15,11 @@
 
 为了深刻理解 CuTe 的设计美学，我们必须回顾 NVIDIA GPU 算子开发的演进历史：
 
-```mermaid
-timeline
-    title NVIDIA 算子开发范式演进史
-    CUDA C++ 裸写时代 (2008-2017) : 手动计算线性偏移 idx = y*pitch + x : 手动处理 Bank Conflict : 手动展开嵌套 for 循环
-    CUTLASS 1.x / 2.x (2017-2022) : 迭代器模板抽象 (Tile Iterator) : 硬编码 Swizzle 模式 : 模板深度爆炸, 难以适配新硬件
-    CUTLASS 3.x / CuTe 时代 (2023-至今) : 一切皆布局 (Layout 代数体系) : 线程与数据完全正交 : 零成本编译期常量折叠 : 统一支持 Hopper / Blackwell 新硬件
-```
+| 时代阶段 | 代表技术架构 | 核心开发范式与物理机理 | 历史局限性与痛点 |
+| :--- | :--- | :--- | :--- |
+| **CUDA C++ 裸写时代**<br/>*(2008 - 2017)* | 原生 CUDA C++ 内核 | • 手动计算线性内存偏移 `idx = y * pitch + x`<br/>• 手动插入 Padding 消除 Bank Conflict<br/>• 手动展开多层嵌套 for 循环与寄存器轮转 | 代码量巨大，复用性近乎为零；微架构演进即导致整网内核推倒重写。 |
+| **CUTLASS 1.x / 2.x**<br/>*(2017 - 2022)* | C++ 模板抽象与迭代器体系 | • 引入迭代器（Tile Iterator）与软件流水线<br/>• 硬编码针对特定架构的 Swizzle 模板模式<br/>• 封装针对 Tensor Core 的 `mma.sync` 算子 | 模板嵌套深度爆炸（达数十层），报错晦涩难解；数据与线程几何高度绑定，无法适配 Hopper/Blackwell。 |
+| **CUTLASS 3.x / CuTe 时代**<br/>*(2023 - 至今)* | CuTe 布局代数（Layout Algebra） | • **一切皆布局**：函数映射将高维坐标映射到一维地址<br/>• **数据与线程绝对正交**：`Tensor = Engine + Layout`<br/>• **零成本编译期折叠**：`Int<N>` 静态常量优化<br/>• 原生支持 Hopper WGMMA/TMA 与 Blackwell 双 SM 协同 | 现代高性能算子开发的行业黄金事实标准。 |
 
 ### 0.1 传统 CUDA 开发与 CUTLASS 2.x 的三大痛点
 1. **索引起算机械繁琐，极易出错（Index Bookkeeping Hell）**：
