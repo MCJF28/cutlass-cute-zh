@@ -349,23 +349,11 @@ graph TD
 
 ## 6. 本章核心小结与决策矩阵
 
-```mermaid
-mindmap
-  root((CUTLASS 3.x GEMM 体系))
-    五层系统抽象
-      Device: Host 端参数固化, CUDA Graph 完美适配
-      Kernel: Cluster 跨 SM 互联, TileScheduler 持久化网格
-      Collective: 硬件最大协同单元, Warp Specialization 主循环
-      Tiled: CuTe 布局代数微内核展开
-      Atom: PTX 汇编单条硬件指令直通
-    自动化合成 (CollectiveBuilder)
-      自动计算最大流水线级数 (StageCountAuto)
-      自动注入 Bank 消除混洗 (Swizzle)
-      自动选择调度模式 (Pingpong / Cooperative)
-    尾声融合 (EVT)
-      寄存器内原地融合 Bias + Act + Residual + Quant
-      节省 3 倍全局显存总线带宽
-```
+| 系统抽象层级 | 核心职责与硬件映射 | 自动化与工程集成 |
+| :--- | :--- | :--- |
+| **五层系统抽象** | • **Device**：Host 端参数校验与 CUDA Graph 捕获<br/>• **Kernel**：网格调度与 Cluster 跨 SM 协同<br/>• **Collective**：硬件协同主循环与 Warp Specialization<br/>• **Tiled / Atom**：CuTe 布局微内核与单条 PTX 指令直通 | 分层清晰，顶层易用性与底层极致性能兼得。 |
+| **CollectiveBuilder** | • 自动计算最优流水线阶段数 (`StageCountAuto`)<br/>• 自动匹配硬件 Bank 消除混洗 (`Swizzle`)<br/>• 自动选取最优调度模式 (Pingpong / Cooperative) | 声明式编程，全自动静态合成无瑕疵 Mainloop。 |
+| **尾声融合 (EVT)** | 累加器驻留寄存器堆原地计算 Bias + 激活函数 + 残差 + 量化 | 消灭中间结果显存往返，节省高达 3 倍片外访存带宽。 |
 
 掌握了 CUTLASS 3.x 的五层架构金字塔与 `CollectiveBuilder` 自动合成心法，你便站在了现代 GPU 算子工程的最前沿。
 在接下来的章节中，我们将探索 **Blackwell SM100 架构的前沿特性** 以及 **高效 GEMM 的全生命周期调优技巧**！

@@ -293,24 +293,11 @@ __device__ void complete_cute_gemm_step(
 
 ## 6. 本章核心小结与算法 API 导图
 
-```mermaid
-mindmap
-  root((CuTe 泛型算法库))
-    数据搬运体系
-      copy: 默认根据指针标签特化 (GMEM->SMEM, 128-bit 向量化)
-      Copy_Atom: 显式覆盖硬件搬运 (UniversalCopy, cp.async, TMA)
-      copy_if: 结合布尔谓词张量与 Stride-0, 零分歧安全边界保护
-    数学计算体系 (gemm)
-      模式 1: (V) x (V) => (V) 逐元素 FMA
-      模式 2: (M) x (N) => (M, N) 外积展开
-      模式 3: (M, K) x (N, K) => (M, N) 标准 GEMM (归约轴恒为第 2 维)
-      模式 4: (V, M) x (V, N) => (V, M, N) 批处理向量外积
-      模式 5: (V, M, K) x (V, N, K) => (V, M, N) Tensor Core 硬件收缩
-    张量工具体系
-      axpby: Y = alpha * X + beta * Y 广义尾声缩放
-      clear: 极速寄存器与 SMEM 硬件清零 (xor / st.shared)
-      fill: 常量全量填充
-```
+| 算法大类 | 核心算子与重载模式 | 工业级硬件映射与优化 |
+| :--- | :--- | :--- |
+| **数据搬运体系** | • `copy`：根据指针标签自动分发 (GMEM->SMEM, 128-bit 向量化)<br/>• `Copy_Atom`：显式绑定硬件搬运 (UniversalCopy, cp.async, TMA)<br/>• `copy_if`：结合布尔谓词张量与 Stride-0，零分歧越界安全保护 | 单条指令搬运 16 字节，硬件层面自动补零。 |
+| **数学计算体系**<br/>*(gemm)* | • 模式 1：(V) x (V) => (V) 标量/向量 FMA<br/>• 模式 2：(M) x (N) => (M, N) 寄存器外积展开<br/>• 模式 3：(M, K) x (N, K) => (M, N) 标准 GEMM (K 恒居第 2 维)<br/>• 模式 4：(V, M) x (V, N) => (V, M, N) 批处理向量外积<br/>• 模式 5：(V, M, K) x (V, N, K) => (V, M, N) Tensor Core 硬件收缩 | 泛型覆盖从标量 ALU 到最新 Tensor Core 硬件指令。 |
+| **张量辅助工具** | • `axpby`：Y = alpha * X + beta * Y 广义尾声缩放<br/>• `clear`：极速寄存器与 SMEM 硬件清零 (异或 / 向量写零) | 算子收尾与临时内存初始化的最高效手段。 |
 
 掌握了这些泛型算法，你便拥有了在 GPU 上组织任意复杂多维数据流转与数学收缩的完整武器库。
 在下一章 [`00_quickstart.md`](./00_quickstart.md) 中，我们将为初学者全面梳理 CuTe 的极速入门心智模型与环境搭建指南；随后我们将正式进军 **CUTLASS 3.x 宏观架构篇**，探索软件流水线与 Blackwell 架构的终极奥义！

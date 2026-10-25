@@ -430,26 +430,11 @@ auto permuted_tiled_mma = make_tiled_mma(
 
 ## 6. 本章核心小结与思维导图
 
-```mermaid
-mindmap
-  root((CuTe MMA 体系))
-    四层抽象模型
-      Operation: 纯 PTX 包装, 零运行时依赖
-      MMA_Traits: 指令元信息, (T, V) -> (M, N, K) 映射
-      MMA_Atom: 自动化寄存器分片生成与计算调用
-      TiledMMA: 宏观平铺, 线程网格与数值空间编排
-    逆向工程实战 (Volta SM70)
-      ThrID: Shape<_4, _2>, Stride<_1, _16>
-      CLayout: 8 线程 x 8 数值 -> 8x8 矩阵 (代数复原硬件布线)
-    Hopper 范式革命 (SM90 GMMA)
-      Warpgroup 粒度: 128 线程
-      共享内存直读: 零寄存器加载 (Zero-reg bypass)
-      ALayout: 步长为 0 的广播描述符
-    TiledMMA 编排进阶
-      Atom 复制: 拓展线程规模
-      Tile 平铺: 扩大局部矩阵容量
-      模式置换 Permutation: 消除 Bank Conflict, 保证物理连续访存
-```
+| 抽象层级 | 核心职责与代数模型 | 硬件演进与微架构实战 |
+| :--- | :--- | :--- |
+| **四层抽象模型** | • `Operation`：纯 PTX 指令包装，零运行时依赖<br/>• `MMA_Traits`：指令元信息，(Thread, Value) -> (M, N, K) 映射<br/>• `MMA_Atom`：自动化寄存器分片生成与计算调用<br/>• `TiledMMA`：宏观平铺，线程网格与数值空间编排 | 将晦涩硬件微架构解构为标准代数组件。 |
+| **逆向工程推演**<br/>*(Volta SM70)* | • 线程布局：Shape<_4, _2>, Stride<_1, _16><br/>• 数值布局：8 线程 x 8 数值 -> 8x8 矩阵切片 | 揭密 QuadPair 硬件交错连线布线机理。 |
+| **Hopper 范式革命**<br/>*(SM90 GMMA)* | • **Warpgroup 粒度**：128 线程协同发射<br/>• **共享内存直读**：零寄存器中转 (Zero-reg bypass)<br/>• **ALayout 描述符**：步长为 0 的硬件广播 | 释放近千 TFLOPS 恐怖计算算力。 |
 
 掌握了 `MMA_Atom` 与 `TiledMMA` 的四层结构与代数推导法门，你便彻底洞悉了 GPU 硬件矩阵乘计算的核心奥秘。
 在下一章 [`0x_gemm_tutorial.md`](./0x_gemm_tutorial.md) 中，我们将把前三章所学的所有知识融会贯通，从零编写一个超越 cuBLAS 基准性能的现代高效 GEMM 算子！

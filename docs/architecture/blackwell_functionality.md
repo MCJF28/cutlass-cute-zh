@@ -245,22 +245,11 @@ using GemmHandle = cutlass::gemm::device::GemmUniversalAdapter<GemmKernel>;
 
 ## 7. 本章核心小结与前沿展望
 
-```mermaid
-mindmap
-  root((Blackwell SM100 前沿体系))
-    硬件指令突破
-      tcgen05.mma: 第 5 代 Tensor Core
-      算力飞跃: 2x ~ 4x Hopper 极限吞吐
-      2:4 结构化稀疏: 硬件级计算带宽再次翻倍
-    微缩放数学框架 (Microscaling)
-      OCP MX 规范: mx_float4_t + float_ue8m0_t (SV=32)
-      NVIDIA NV 规范: nv_float4_t + float_ue4m3_t (SV=16)
-      实时硬件解码: 零指令周期开销, 4-bit 精度无损推理
-    微架构拓扑创新
-      双 SM 协同 (cta_group::2): 跨 SM DSMEM 互联
-      超大瓦片平铺: 256x128x128 突破单 SM 容量极限
-      数据复用率翻倍: 彻底粉碎内存墙瓶颈
-```
+| 核心突破维度 | 硬件指令与数学规范 | 微架构革新与物理收益 |
+| :--- | :--- | :--- |
+| **硬件指令突破** | • `tcgen05.mma`：第 5 代 Tensor Core 专用硬件指令<br/>• **2:4 结构化稀疏**：硬件级计算带宽再次翻倍 | 算力相较 Hopper 提升 2x ~ 4x 理论极限吞吐。 |
+| **微缩放数学框架**<br/>*(Microscaling)* | • **OCP MX 规范**：`mx_float4_t` + `float_ue8m0_t` (Block=32)<br/>• **NVIDIA NV 规范**：`nv_float4_t` + `float_ue4m3_t` (Block=16) | 专用硬件飞线解码单元，零指令周期开销，4-bit 精度无损推理。 |
+| **微架构拓扑创新** | • **双 SM 协同**：`cta_group::2` 跨 SM DSMEM 高速互联<br/>• **超大瓦片平铺**：256x128x128 突破单 SM 寄存器与容量上限 | 权重数据全局复用率翻倍，彻底粉碎显存带宽内存墙瓶颈。 |
 
 至此，关于 NVIDIA 硬件最前沿的 Blackwell SM100 架构与微缩放算子体系已被完整剖析。
 在接下来的章节中，我们将探索 **CUTLASS 3.x 的宏观软件设计哲学** 以及 **端到端 GEMM 性能调优的终极实战指南**！

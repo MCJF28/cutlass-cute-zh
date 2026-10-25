@@ -554,24 +554,11 @@ __device__ void debug_dump_tensor(char const* name, TensorType const& t) {
 
 ## 9. 本章核心小结与思维导图
 
-```mermaid
-mindmap
-  root((CuTe Tensor))
-    核心构成公理
-      Tensor = Engine + Layout
-      存储与几何完全正交
-    存储引擎 Engine
-      ArrayEngine: 寄存器持有型 (Owning), 静态容量
-      ViewEngine: 显存非持有型视图 (Non-owning)
-      显存强类型打标: gmem_ptr, smem_ptr, 驱动硬件特化
-    访问与切片
-      自然嵌套坐标: make_coord
-      通配符切片: _ 保留维度, 标量折叠维度
-      双相求值: 编译期常量折叠
-    分区三部曲
-      内部分区 local_tile: 网格至 CTA 瓦片
-      外部分区 local_partition: CTA 瓦片至线程网格
-      TV 布局分区: 终极解耦 Tensor Core 硬件排布
-```
+| 核心概念 | 形式化代数定义 | 物理硬件实现与操作范式 |
+| :--- | :--- | :--- |
+| **核心构成公理** | `Tensor = Engine + Layout` | 存储容器（数据在哪）与几何结构（如何排布）完全正交。 |
+| **存储引擎 Engine** | • `ArrayEngine`：寄存器持有型 (Owning)，静态容量分配<br/>• `ViewEngine`：显存非持有型视图 (Non-owning)，轻量包装裸指针 | 强类型指针打标 (`gmem_ptr`, `smem_ptr`) 驱动硬件指令特化。 |
+| **切片与访问** | • 自然嵌套坐标：`make_coord` 访问高维数据<br/>• 通配符切片：`_` 保留维度，标量折叠维度 | 编译期常量折叠，零运行时寻址开销。 |
+| **分区三部曲** | • `local_tile`：全局张量平铺到 CTA 瓦片<br/>• `local_partition`：CTA 瓦片切分到各线程寄存器 | 严格保持数据类型对齐与布局同构。 |
 
 掌握了 `Tensor` 的构造、打标、切片与三大分区法门，你就已经拿到了通往 CUTLASS 3.x 现代算子核心宝库的金钥匙。下一章中，我们将把这些张量与硬件算力单元（Tensor Core / MMA Atom）正式联姻，深入解析现代 GPU 核心计算引擎的运行本质！

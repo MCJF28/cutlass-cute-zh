@@ -392,22 +392,11 @@ void run_hopper_gett(...) {
 
 ## 5. 本章核心小结与优化 Checklist
 
-```mermaid
-mindmap
-  root((CuTe GEMM 全景实战))
-    基础基石 (sgemm_1.cu)
-      统一视角: (M, K) x (N, K) -> 归约轴 K 恒居第 2 维
-      CTA 分块: local_tile + Step 投影
-      双相切片: 数据搬运 tA|tB vs 计算外积 tC
-    工业级优化 (sgemm_2.cu)
-      向量化: TiledCopy + UniversalCopy<uint128_t> (128-bit)
-      Bank 消除: Stride +1 Padding 错位, 冲突降为 0
-      数学平铺: TiledMMA + make_fragment_C
-    架构极限
-      Ampere SM80: 多阶段 cp.async 硬件异步流水线
-      Hopper SM90: Warpgroup WGMMA 共享内存直读
-      GETT 泛化: 任意高阶张量缩并一键折叠
-```
+| 演进阶段 | 核心实现原语与代码范式 | 微架构收益与硬件物理机理 |
+| :--- | :--- | :--- |
+| **基础基石**<br/>*(sgemm_1.cu)* | • **统一视角**：(M, K) x (N, K)，归约轴 K 恒居第 2 维<br/>• **CTA 分块**：`local_tile` + `Step` 投影<br/>• **双相切片**：数据搬运 `tA|tB` 与计算外积 `tC` 正交解耦 | 代码完全告别扁平全局下标算术，线程与数据几何逻辑对齐。 |
+| **工业级优化**<br/>*(sgemm_2.cu)* | • **向量化访存**：`TiledCopy` + `UniversalCopy<uint128_t>` (128-bit)<br/>• **Bank 消除**：`Stride +1 Padding` 错位排布，冲突降为 0<br/>• **数学平铺**：`TiledMMA` + `make_fragment_C` 累加器 | 访存指令利用率达 100%，共享内存单周期全带宽并发无阻塞吞吐。 |
+| **现代架构极限**<br/>*(3.x / Hopper)* | • **Ampere SM80**：多阶段 `cp.async` 硬件异步流水线<br/>• **Hopper SM90**：Warpgroup `WGMMA` 共享内存直读计算<br/>• **GETT 泛化**：任意高维张量缩并一键无开销折叠 | 算子逼近硬件理论 Roofline 物理极限峰值。 |
 
 ### 🚀 生产环境 GEMM 性能排查清单 (Performance Checklist)
 1. **是否向量化？** 检查 PTX 汇编是否生成了 `LDG.E.128` 或 `LDS.128`，确保访存指令利用率最大化。

@@ -314,25 +314,11 @@ __device__ void run_specialized_gemm_mainloop(
 
 ## 6. 本章核心小结与架构全景图
 
-```mermaid
-mindmap
-  root((CUTLASS 异步流水线))
-    理论基石
-      利特尔法则: Concurrency = Latency x Throughput
-      延迟掩盖: 从双缓冲 (2级) 跨越至多级环形缓冲 (4~8级)
-    硬件突破 (Hopper SM90)
-      mbarrier 硬件对象: 64位共享内存屏障
-      硬件事务计数: TMA 自动扣减字节, 归零单周期翻转相位
-    架构革新 (Warp Specialization)
-      生产者 Warp: 32寄存器, 单线程发射 TMA
-      消费者 Warps: 224+寄存器, 专职 Tensor Core 计算
-    四步协议状态机
-      producer_acquire: 检查槽位是否空闲 (防覆写)
-      producer_commit: 提交传输任务
-      consumer_wait: 阻塞等待数据完全进入 SMEM
-      consumer_release: 释放槽位给生产者
-      相位翻转 Phase Flip: 严防跨轮次时序竞态
-```
+| 流水线维度 | 理论基石与硬件机制 | 协议与状态机模型 |
+| :--- | :--- | :--- |
+| **理论与硬件基石** | • **利特尔法则**：Concurrency = Latency x Throughput<br/>• **延迟掩盖**：从双缓冲 (2级) 跨越至多级环形缓冲 (4~8级)<br/>• **mbarrier 硬件对象**：64 位共享内存异步屏障与事务计数 | 硬件自动扣减传输字节，归零单周期翻转相位。 |
+| **Warp Specialization** | • **生产者 Warp**：32 个寄存器轻量常驻，单线程异步发射 TMA<br/>• **消费者 Warps**：224+ 满血寄存器分配，专职矩阵乘累加计算 | 生产者与消费者在空间上彻底物理隔离，零指令抢占。 |
+| **四步协议状态机** | • `producer_acquire`：检查槽位空闲，杜绝覆盖数据<br/>• `producer_commit`：提交传输任务<br/>• `consumer_wait`：阻塞等待数据就绪，安全开始计算<br/>• `consumer_release`：释放槽位通知生产者 | 无锁、无忙等待的高性能循环流转闭环。 |
 
 掌握了 `cutlass::Pipeline` 的四步状态机协议与硬件事务屏障机制，你就已经吃透了现代高性能算子流水线编排的最底层心法。
 在下一章 [`gemm_api_3x.md`](./gemm_api_3x.md) 中，我们将站在更高维度，全面剖析 CUTLASS 3.x 工业级 GEMM API 的五层金字塔设计与模板组装流水线！
