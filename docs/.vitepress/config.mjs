@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "CUTLASS 3.x & CuTe 学习指南",
   description: "NVIDIA CUTLASS 3.x 与 CuTe 核心架构学习指南（AI 辅助汉化与深度解析版）",
-  base: "/",
+  base: process.env.BASE_PATH || (process.env.GITHUB_ACTIONS ? '/cutlass-cute-zh/' : '/'),
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }]
   ],
