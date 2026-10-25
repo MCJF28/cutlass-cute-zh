@@ -9,13 +9,13 @@ export default defineConfig({
   ],
   themeConfig: {
     nav: [
-      { text: '首页', link: '/' },
-      { text: 'CuTe 代数规范', link: '/cute/00_quickstart' },
-      { text: '硬件原子与搬运', link: '/cute/0t_mma_atom' },
-      { text: '3.x 核心架构', link: '/architecture/cutlass_3x_design' },
-      { text: '微架构与 Blackwell', link: '/architecture/blackwell_functionality' },
-      { text: '大模型前沿算子', link: '/workloads/flash_attention' },
-      { text: '术语词典', link: '/glossary' },
+      { text: '首页', link: '/', activeMatch: '^/$' },
+      { text: 'CuTe 代数规范', link: '/cute/00_quickstart', activeMatch: '^/cute/0[0-7]' },
+      { text: '硬件原子与搬运', link: '/cute/0t_mma_atom', activeMatch: '^/cute/(0t|0x|0y|0z|0w)' },
+      { text: '3.x 核心架构', link: '/architecture/cutlass_3x_design', activeMatch: '^/architecture/(cutlass_3x_design|gemm_api_3x|collective_builder|pipeline|tile_scheduler|epilogue_evt|efficient_gemm|split_k)' },
+      { text: '微架构与 Blackwell', link: '/architecture/blackwell_functionality', activeMatch: '^/architecture/(blackwell_functionality|microscaling_fp4|two_sm_cooperative|sparse_gemm)' },
+      { text: '大模型前沿算子', link: '/workloads/flash_attention', activeMatch: '^/workloads/' },
+      { text: '术语词典', link: '/glossary', activeMatch: '^/glossary' },
       { text: 'NVIDIA 源码', link: 'https://github.com/NVIDIA/cutlass' }
     ],
     sidebar: {

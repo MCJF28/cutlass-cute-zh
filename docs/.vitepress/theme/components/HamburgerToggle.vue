@@ -175,19 +175,34 @@ onUnmounted(() => {
 }
 
 @media (min-width: 960px) {
-  /* Hide static pinned sidebar by default on desktop */
+  /* Override VitePress default sidebar to make it an elegant, clean drawer */
   .VPSidebar {
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 320px !important;
+    max-width: 340px !important;
+    padding-left: 20px !important;
+    padding-right: 16px !important;
+    padding-top: calc(var(--vp-nav-height) + 16px) !important;
+    padding-bottom: 32px !important;
     transform: translateX(-100%) !important;
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease !important;
     z-index: 50 !important;
     box-shadow: none !important;
     border-right: 1px solid var(--vp-c-divider) !important;
+    background-color: var(--vp-sidebar-bg-color, var(--vp-c-bg)) !important;
   }
 
   /* Slide in drawer when active */
   .custom-drawer-open .VPSidebar {
     transform: translateX(0) !important;
-    box-shadow: 10px 0 35px -5px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 12px 0 35px -5px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* Hide the VitePress sticky curtain element inside sidebar */
+  .VPSidebar .curtain {
+    display: none !important;
   }
 
   /* Reset content left padding so documentation is centered and spacious */
@@ -199,6 +214,16 @@ onUnmounted(() => {
   .VPContent.has-sidebar .VPDoc {
     max-width: 1060px;
     margin: 0 auto;
+  }
+}
+
+@media (min-width: 1440px) {
+  /* Strictly enforce width and clean padding on wide/ultra-wide screens! */
+  .VPSidebar {
+    width: 320px !important;
+    max-width: 340px !important;
+    padding-left: 20px !important;
+    padding-right: 16px !important;
   }
 }
 </style>
