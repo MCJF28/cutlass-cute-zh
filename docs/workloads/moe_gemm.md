@@ -52,12 +52,22 @@ $$C_i = A_i \times B_i + C_i, \quad i \in [0, E-1]$$
 - 专家的权重尺寸 $N$ 和 $K$ 通常是静态固定的（例如 $N=4096, K=4096$）；
 - 但每个专家的有效 Token 数 $M_i$ 动态可变（$M_0 = 45, M_1 = 12, \dots$），且满足 $\sum_{i=0}^{E-1} M_i = \text{Total\_Tokens} \times \text{TopK}$。
 
-```
-                Grouped GEMM 连续压平布局
-[ Expert 0: M=45 ] [ Expert 1: M=12 ] [ Expert 2: M=80 ] ...
-+----------------+------------------+------------------+ ...
-| CTA 并发网格在软件调度器指挥下，自动无缝跨越边界流水线计算   |
-+------------------------------------------------------+ ...
+```mermaid
+flowchart LR
+    subgraph MoELayout["Grouped GEMM 不规则动态分组布局"]
+        E0["Expert 0<br/><b>M₀ = 45</b>"]
+        E1["Expert 1<br/><b>M₁ = 12</b>"]
+        E2["Expert 2<br/><b>M₂ = 80</b>"]
+        E_more["... 更多专家<br/><b>Mₑ 动态可变</b>"]
+    end
+
+    subgraph Scheduler["CUTLASS GroupedTileScheduler 统一动态工作调度器"]
+        Prefix["前缀和映射 Prefix Sum (Tiles)"]
+        Work["持久化 CTA 工作网格 (Persistent Grid)<br/>无缝跨越不规则边界流水线计算"]
+        Prefix --> Work
+    end
+
+    MoELayout ==> Scheduler
 ```
 
 ---

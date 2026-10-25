@@ -27,27 +27,24 @@ using MmaCore = typename cutlass::gemm::threadblock::DefaultMmaCore<
 
 `CollectiveBuilder` 位于 CUTLASS 3.x 五层架构的承上启下核心枢纽，其静态决策流如下：
 
-```
-                    开发者输入的声明式高阶参数
-                                |
-                                v
-+---------------------------------------------------------------+
-|     cutlass::gemm::collective::CollectiveBuilder<...>         |
-+---------------------------------------------------------------+
-                                |
-     +--------------------------+--------------------------+
-     | (架构标签分发: Tag Dispatch)                        |
-     v                                                     v
-[ Sm80 架构分支 (Ampere) ]                       [ Sm90 架构分支 (Hopper) ]
-  - 匹配 ldmatrix + cp.async                       - 匹配 WGMMA + TMA
-  - 计算寄存器双缓冲布局                            - 计算 128B Swizzle SMEM
-  - 生成单/多阶段软件流水线                        - 编排 Warp Specialization 生产者/消费者
-     |                                                     |
-     +--------------------------+--------------------------+
-                                |
-                                v
-      自动合成完全特化的 `CollectiveMainloop` 强类型对象
-      (包含完整的 sA/sB 布局、TiledMMA、TiledCopy、mbarrier)
+```mermaid
+flowchart TD
+    User["开发者声明式高阶参数输入<br/>(ArchTag, ElementA/B, TileShape, Stages, ClusterShape)"]
+    
+    Builder["<b>cutlass::gemm::collective::CollectiveBuilder&lt;...&gt;</b><br/><i>编译期元编程自动推理与布局约束求解</i>"]
+    
+    subgraph Dispatch["架构策略标签分发 (Tag Dispatch)"]
+        Sm80["<b>Sm80 分支 (Ampere)</b><br/>• 匹配 ldmatrix + cp.async<br/>• 寄存器双缓冲布局<br/>• 经典多阶段软件流水线"]
+        Sm90["<b>Sm90 分支 (Hopper / Blackwell)</b><br/>• 匹配 WGMMA + TMA 异步引擎<br/>• 128B Swizzle 共享内存布局<br/>• 编排 Warp Specialization 生产者/消费者"]
+    end
+    
+    Output["自动合成完全特化的 <b>CollectiveMainloop</b> 强类型对象<br/><i>(包含精准 sA/sB 布局、TiledMMA、TiledCopy、mbarrier 同步原语)</i>"]
+    
+    User --> Builder
+    Builder --> Sm80
+    Builder --> Sm90
+    Sm80 --> Output
+    Sm90 --> Output
 ```
 
 ---

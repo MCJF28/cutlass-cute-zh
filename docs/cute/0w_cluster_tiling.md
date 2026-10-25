@@ -13,24 +13,19 @@
 
 然而，随着大模型注意力机制与超大矩阵乘法的爆发，L2 Cache 逐渐成为带宽瓶颈。为此，NVIDIA 在 **Hopper（SM90）与 Blackwell（SM100）** 架构中引入了革命性的硬件新层级：**线程块集群（Thread Block Cluster）**。
 
-```
-+-------------------------------------------------------------+
-|              Thread Block Cluster (例如 2x2 CTA)             |
-|                                                             |
-|  +-----------------------+       +-----------------------+  |
-|  | CTA (0, 0) on SM 0    |  <->  | CTA (0, 1) on SM 1    |  |
-|  | Local SMEM A          |  片上 | Local SMEM B          |  |
-|  +-----------------------+  NoC  +-----------------------+  |
-|              ^                           ^                  |
-|              |         高速互联          |                  |
-|              v                           v                  |
-|  +-----------------------+       +-----------------------+  |
-|  | CTA (1, 0) on SM 2    |  <->  | CTA (1, 1) on SM 3    |  |
-|  | Local SMEM C          |  互访 | Local SMEM D          |  |
-|  +-----------------------+       +-----------------------+  |
-+-------------------------------------------------------------+
-                               |
-                        Distributed SMEM
+```mermaid
+flowchart TD
+    subgraph Cluster["Thread Block Cluster (例如 2×2 CTA)"]
+        CTA00["CTA (0, 0) on SM 0<br/>Local SMEM A"]
+        CTA01["CTA (0, 1) on SM 1<br/>Local SMEM B"]
+        CTA10["CTA (1, 0) on SM 2<br/>Local SMEM C"]
+        CTA11["CTA (1, 1) on SM 3<br/>Local SMEM D"]
+
+        CTA00 <==>|"片上 NoC 高速互访"| CTA01
+        CTA10 <==>|"片上 NoC 高速互访"| CTA11
+        CTA00 <==>|"DSMEM 统一编址"| CTA10
+        CTA01 <==>|"DSMEM 统一编址"| CTA11
+    end
 ```
 
 ### 1.1 核心硬件新特性

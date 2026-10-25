@@ -44,26 +44,33 @@ $$Y = \tilde{X} \times W$$
 
 借助 CUTLASS 3.x 强大的 **Warp Specialization（线程束专业化分工）** 与共享内存代数抽象，我们终于能够构建世界级的 **Fused Norm-GEMM 原地融合引擎**！
 
-```
-+------------------------------------------------------------------------+
-|               Fused Norm-GEMM 协同主循环 (单 CTA 内部)                 |
-|                                                                        |
-|  [ Warp 0~1: 归一化生产者 (Norm Producer) ]                             |
-|  1. 从 GMEM 流式拉取 X 的整行向量                                      |
-|  2. 利用 Warp Shuffle (__shfl_xor_sync) 极速完成均方根归约              |
-|  3. 乘以 gamma 并直接写入专用的带 Swizzle 的共享内存缓冲区 sA          |
-|  4. 提交 mbarrier 硬件事务计数                                         |
-|                                                                        |
-|                               ^                                        |
-|                               | (无锁片上流转，绝对不写入片外显存 DRAM!)|
-|                               v                                        |
-|                                                                        |
-|  [ Warp 2~3 / Tensor Core: 矩阵乘消费者 (MMA Consumer) ]               |
-|  1. 等待 mbarrier 相位到达 (Phase Wait)                                |
-|  2. 从 sA 读取归一化后的数据，从 sB 读取权重数据                        |
-|  3. 驱动 Tensor Core (wgmma) 进行矩阵乘累加                            |
-|  4. 尾声直接写回最终投影结果 Y                                         |
-+------------------------------------------------------------------------+
+```mermaid
+flowchart TD
+    subgraph FusedEngine["Fused Norm-GEMM 协同主循环 (单 CTA 内部)"]
+        subgraph Producer["Warp 0~1: 归一化生产者 (Norm Producer)"]
+            P1["1. 从 GMEM 流式拉取 X 的整行向量"]
+            P2["2. 利用 Warp Shuffle (__shfl_xor_sync) 极速完成均方根归约"]
+            P3["3. 乘以 gamma 并直接写入带 Swizzle 的共享内存缓冲区 sA"]
+            P4["4. 提交 mbarrier 硬件事务计数到达通知"]
+            P1 --> P2 --> P3 --> P4
+        end
+
+        subgraph SMEM_Buf["片上零延迟流转通道 (绝对不写回片外 DRAM)"]
+            sA["共享内存缓冲区 sA<br/>(存储归一化后的激活特征)"]
+        end
+
+        subgraph Consumer["Warp 2~3: 矩阵乘消费者 (MMA Consumer)"]
+            C1["1. 等待 mbarrier 相位翻转 (Phase Wait)"]
+            C2["2. 从 sA 读取归一化数据，从 sB 加载权重数据"]
+            C3["3. 驱动 Tensor Core (wgmma) 进行矩阵乘累加"]
+            C4["4. 尾声直接写回最终投影结果 Y"]
+            C1 --> C2 --> C3 --> C4
+        end
+
+        P3 --> sA
+        P4 -.->|"mbarrier 同步触发"| C1
+        sA --> C2
+    end
 ```
 
 ### 3.1 极速行内归约：Warp Shuffle 蝶形网络

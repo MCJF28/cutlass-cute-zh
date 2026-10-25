@@ -51,23 +51,24 @@
 
 NVIDIA GPU 的 Tensor Core 内部集成了专用的稀疏乘法器与交叉开关阵列（Crossbar Network）：
 
-```
-+-------------------------------------------------------------+
-|               Sparse Tensor Core 计算微架构                  |
-|                                                             |
-| 压缩矩阵 A: [ a0, a2 ]      元数据索引: [ 0, 2 ]             |
-|                                    |                        |
-|                                    v                        |
-|                              [ 硬件交叉开关 ]                |
-|                              根据索引瞬间抓取               |
-|                                    |                        |
-| 稠密矩阵 B: [ b0, b1, b2, b3 ]     v                        |
-| 筛选后操作数:                [ b0, b2 ]                     |
-|                                    |                        |
-|                                    v                        |
-|                             [ 硬件乘加阵列 ]                 |
-|                             a0*b0 + a2*b2                   |
-+-------------------------------------------------------------+
+```mermaid
+flowchart TD
+    subgraph SparseTC["Sparse Tensor Core 2:4 硬件计算微架构"]
+        A_comp["压缩矩阵 A 操作数<br/><b>[ a0, a2 ]</b>"]
+        Meta["2-bit 稀疏元数据索引<br/><b>[ 0, 2 ]</b>"]
+        B_dense["稠密矩阵 B 完整向量<br/><b>[ b0, b1, b2, b3 ]</b>"]
+        
+        XBar["硬件交叉开关 (Crossbar Network)<br/><i>单周期瞬时寻址抽取</i>"]
+        B_filtered["抽取匹配操作数<br/><b>[ b0, b2 ]</b>"]
+        
+        MAC["硬件乘加阵列 (Multiply-Accumulate)<br/><b>a0 × b0 + a2 × b2</b>"]
+        
+        Meta --> XBar
+        B_dense --> XBar
+        XBar --> B_filtered
+        A_comp --> MAC
+        B_filtered --> MAC
+    end
 ```
 
 1. **硬件级瞬时解码**：硬件交叉开关在单时钟周期内根据 2-bit 元数据从稠密矩阵 $B$ 中抓取对应的两个元素；

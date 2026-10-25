@@ -56,22 +56,24 @@ $$O = \frac{O^{(\text{final})}}{l^{(\text{final})}}$$
 
 如果说 FlashAttention-1/2 还夹杂着大量手写内联 PTX 和裸指针下标换算，那么专为 NVIDIA Hopper 架构设计的 **FlashAttention-3 则完全基于 CUTLASS 3.x 与 CuTe 进行了全盘重构**！
 
-```
-+-------------------------------------------------------------+
-|               FlashAttention-3 Hopper 执行管线               |
-|                                                             |
-|   TMA 异步异步加载 Q, K, V -> 128B Swizzle 共享内存          |
-|                               |                             |
-|                               v                             |
-|   [ WGMMA 引擎 1 ]  <-- 异步发射 -->  [ WGMMA 引擎 2 ]       |
-|    S = Q * K^T                         O = P * V            |
-|                                                             |
-|           \                         /                       |
-|            \                       /                        |
-|             v                     v                         |
-|   [ Warp 专用数学单元: 就地执行 Online Softmax 寄存器更新 ]    |
-|   (利用 Warp Specialization 生产者-消费者彻底解耦重叠)       |
-+-------------------------------------------------------------+
+```mermaid
+flowchart TD
+    subgraph HopperPipe["FlashAttention-3 Hopper 异步执行管线"]
+        TMA["TMA 异步加载 Q, K, V ➔ 128B Swizzle 共享内存 (SMEM)"]
+        
+        subgraph DualWGMMA["WGMMA 异步发射与流水线交错重叠 (Dual-GEMM Overlap)"]
+            WGMMA1["WGMMA 引擎 1<br/><b>S = Q × Kᵀ</b>"]
+            WGMMA2["WGMMA 引擎 2<br/><b>O = P × V</b>"]
+            WGMMA1 <-->|"非阻塞硬件并发"| WGMMA2
+        end
+        
+        WarpMath["Warp 专用数学单元: 就地执行 Online Softmax 寄存器更新<br/><i>(利用 Warp Specialization 生产者-消费者彻底解耦重叠)</i>"]
+        
+        TMA --> WGMMA1
+        TMA --> WGMMA2
+        WGMMA1 --> WarpMath
+        WGMMA2 --> WarpMath
+    end
 ```
 
 ### 3.1 核心硬件特性的极限挖掘
