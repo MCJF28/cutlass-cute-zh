@@ -1,11 +1,9 @@
 # CUTLASS 3.x GEMM API 体系与五层架构全景：从主机调度到微架构指令合成
 
-::: warning ⚠️ 声明与免责须知
-本文档由 **AI 深度辅助汉化、架构重构与长篇技术解析** 形成，**非 NVIDIA 官方技术文档**。
-虽然内容力求数学严谨性、微架构精准性与工程可落地性，但不能保证 100% 毫无差错。
-涉及底层硬件指令（PTX）、Cluster 硬件调度约束及生产环境部署时，请务必以 [NVIDIA CUTLASS 官方源码库](https://github.com/NVIDIA/cutlass) 及原厂 Release 说明为最终准绳。
-:::
+> **重要免责声明**：本网站只是用来消耗反重力额度的，并且给有需要的人看一看，准确度极低。可用度极低，不想看的请不看，造成错误概不负责。
+> 本篇由 AI 辅助汉化与深度解析，非 NVIDIA 官方技术文档。涉及 GPU 底层硬件架构参数与生产算子调优，请以 [NVIDIA CUTLASS 官方源码](https://github.com/NVIDIA/cutlass) 为准。
 
+---
 > [!NOTE] 原文参考
 > 本章对应官方核心架构规范文档 [`media/docs/cpp/gemm_api_3x.md`](https://github.com/NVIDIA/cutlass/blob/main/media/docs/cpp/gemm_api_3x.md)，并在原文档基础上补充了 CUTLASS 2.x 到 3.x 的范式演进对比、持久化内核（Persistent Kernels）工作瓦片调度机理、Epilogue Visitor Tree (EVT) 算子融合以及端到端工业级生产代码实战。
 

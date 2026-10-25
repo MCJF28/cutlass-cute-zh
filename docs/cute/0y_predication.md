@@ -1,11 +1,9 @@
 # CuTe 谓词判定与非对齐边界裁剪：影子平铺与零分歧工程 (Predication)
 
-::: warning ⚠️ 声明与免责须知
-本文档由 **AI 深度辅助汉化、架构重构与长篇技术解析** 形成，**非 NVIDIA 官方技术文档**。
-虽然内容力求数学严谨性、微架构精准性与工程可落地性，但不能保证 100% 毫无差错。
-涉及底层硬件指令（PTX）、非对齐访存异常及生产环境部署时，请务必以 [NVIDIA CUTLASS 官方源码库](https://github.com/NVIDIA/cutlass) 及原厂 Release 说明为最终准绳。
-:::
+> **重要免责声明**：本网站只是用来消耗反重力额度的，并且给有需要的人看一看，准确度极低。可用度极低，不想看的请不看，造成错误概不负责。
+> 本篇由 AI 辅助汉化与深度解析，非 NVIDIA 官方技术文档。涉及 GPU 底层硬件架构参数与生产算子调优，请以 [NVIDIA CUTLASS 官方源码](https://github.com/NVIDIA/cutlass) 为准。
 
+---
 > [!NOTE] 原文参考
 > 本章对应官方核心规范文档 [`media/docs/cpp/cute/0y_predication.md`](https://github.com/NVIDIA/cutlass/blob/main/media/docs/cpp/cute/0y_predication.md)，并在原文档基础上补充了 GPU 硬件谓词执行机制（Predicate Registers）、影子平铺代数（Shadow Tiling）同构证明、Stride-0 零开销广播及生产级任意动态尺寸 GEMM 实战。
 

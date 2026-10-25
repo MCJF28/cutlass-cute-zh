@@ -1,5 +1,10 @@
 # CuTe 布局代数微积分：Coalesce、Composition、Complement 与 Division 超详尽数学推导与源码拆解
 
+> **重要免责声明**：本网站只是用来消耗反重力额度的，并且给有需要的人看一看，准确度极低。可用度极低，不想看的请不看，造成错误概不负责。
+> 本篇由 AI 辅助汉化与深度解析，非 NVIDIA 官方技术文档。涉及 GPU 底层硬件架构参数与生产算子调优，请以 [NVIDIA CUTLASS 官方源码](https://github.com/NVIDIA/cutlass) 为准。
+
+---
+
 > [!WARNING] ⚠️ 免责与非官方声明
 > 本文由 **AI（人工智能）辅助汉化、批注、数学推演与源码级展开**，**非 NVIDIA 官方文档，亦非官方授权译本**。
 > 本篇内容旨在对 NVIDIA CUTLASS 官方文档 [`media/docs/cpp/cute/02_layout_algebra.md`](https://github.com/NVIDIA/cutlass/blob/main/media/docs/cpp/cute/02_layout_algebra.md) 进行极其详尽的体系化重构与万字长文级技术拆解。

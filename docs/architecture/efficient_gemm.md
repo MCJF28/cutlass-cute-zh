@@ -1,11 +1,9 @@
 # 高性能 GEMM 硬件物理极限与微架构优化全景法则 (Efficient GEMM in CUDA)
 
-::: warning ⚠️ 声明与免责须知
-本文档由 **AI 深度辅助汉化、架构重构与长篇技术解析** 形成，**非 NVIDIA 官方技术文档**。
-虽然内容力求数学严谨性、微架构精准性与工程可落地性，但不能保证 100% 毫无差错。
-涉及底层硬件指令（PTX）、L2 缓存混洗参数、Split-K 算子配置及生产环境部署时，请务必以 [NVIDIA CUTLASS 官方源码库](https://github.com/NVIDIA/cutlass) 及原厂 Release 说明为最终准绳。
-:::
+> **重要免责声明**：本网站只是用来消耗反重力额度的，并且给有需要的人看一看，准确度极低。可用度极低，不想看的请不看，造成错误概不负责。
+> 本篇由 AI 辅助汉化与深度解析，非 NVIDIA 官方技术文档。涉及 GPU 底层硬件架构参数与生产算子调优，请以 [NVIDIA CUTLASS 官方源码](https://github.com/NVIDIA/cutlass) 为准。
 
+---
 > [!NOTE] 原文参考
 > 本章对应官方核心性能优化规范文档 [`media/docs/cpp/efficient_gemm.md`](https://github.com/NVIDIA/cutlass/blob/main/media/docs/cpp/efficient_gemm.md)，并在原文档基础上补充了 Roofline 算术强度模型、2D 寄存器外积复用代数证明、L2 缓存蛇形混洗（Swizzle）几何原理、Split-K / Sliced-K 边界与 Nsight Compute (NCU) 性能调优排障清单。
 
