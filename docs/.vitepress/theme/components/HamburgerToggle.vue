@@ -1,5 +1,6 @@
 <template>
-  <div class="desktop-hamburger-wrapper">
+  <!-- Only render hamburger toggle on non-home documentation pages -->
+  <div v-if="!isHome" class="desktop-hamburger-wrapper">
     <button 
       class="hamburger-btn" 
       :class="{ 'is-active': isDrawerOpen }"
@@ -27,11 +28,17 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vitepress'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute, useData } from 'vitepress'
 
 const isDrawerOpen = ref(false)
 const route = useRoute()
+const { frontmatter } = useData()
+
+// Detect whether current page is homepage
+const isHome = computed(() => {
+  return frontmatter.value?.layout === 'home' || route.path === '/' || route.path === '/index.html'
+})
 
 function toggleDrawer() {
   isDrawerOpen.value = !isDrawerOpen.value
@@ -90,13 +97,13 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.4rem 0.75rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 8px;
   background: var(--vp-c-bg-alt, #f1f5f9);
   border: 1px solid var(--vp-c-divider, #e2e8f0);
   color: var(--vp-c-text-1, #1e293b);
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.2s ease;
   user-select: none;
@@ -109,8 +116,8 @@ onUnmounted(() => {
 }
 
 .hamburger-icon {
-  width: 18px;
-  height: 14px;
+  width: 16px;
+  height: 12px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -127,7 +134,7 @@ onUnmounted(() => {
 }
 
 .hamburger-btn.is-active .bar-1 {
-  transform: translateY(6px) rotate(45deg);
+  transform: translateY(5px) rotate(45deg);
 }
 
 .hamburger-btn.is-active .bar-2 {
@@ -135,7 +142,7 @@ onUnmounted(() => {
 }
 
 .hamburger-btn.is-active .bar-3 {
-  transform: translateY(-6px) rotate(-45deg);
+  transform: translateY(-5px) rotate(-45deg);
 }
 
 .hamburger-label {
@@ -144,7 +151,7 @@ onUnmounted(() => {
 }
 
 @media (max-width: 959px) {
-  /* On mobile, VitePress already has its own mobile menu button */
+  /* On mobile, VitePress has its own mobile menu */
   .desktop-hamburger-wrapper {
     display: none;
   }
@@ -168,7 +175,7 @@ onUnmounted(() => {
 }
 
 @media (min-width: 960px) {
-  /* Hide the static pinned sidebar by default on desktop! */
+  /* Hide static pinned sidebar by default on desktop */
   .VPSidebar {
     transform: translateX(-100%) !important;
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease !important;
@@ -177,19 +184,18 @@ onUnmounted(() => {
     border-right: 1px solid var(--vp-c-divider) !important;
   }
 
-  /* When drawer is open, slide it in as an elegant off-canvas menu */
+  /* Slide in drawer when active */
   .custom-drawer-open .VPSidebar {
     transform: translateX(0) !important;
     box-shadow: 10px 0 35px -5px rgba(0, 0, 0, 0.3) !important;
   }
 
-  /* Reset content left padding so the article is spacious and centered! */
+  /* Reset content left padding so documentation is centered and spacious */
   .VPContent.has-sidebar {
     padding-left: 0 !important;
     transition: padding-left 0.25s ease;
   }
 
-  /* Expand max-width of document content for comfortable high-res reading */
   .VPContent.has-sidebar .VPDoc {
     max-width: 1060px;
     margin: 0 auto;
