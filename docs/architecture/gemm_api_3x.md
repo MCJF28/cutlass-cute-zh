@@ -123,10 +123,10 @@ graph LR
 
     Scheduler["TileScheduler 智能调度器<br/>(维护希尔伯特曲线 / 蛇形扫描, 保证 L2 Cache 命中率)"]
 
-    CTA0 -->|1. fetch_next_work()| Scheduler
-    CTA1 -->|1. fetch_next_work()| Scheduler
-    Scheduler -->|2. 返回全局分块坐标 (m, n, l)| CTA0
-    Scheduler -->|2. 返回全局分块坐标 (m, n, l)| CTA1
+    CTA0 -->|"1. fetch_next_work()"| Scheduler
+    CTA1 -->|"1. fetch_next_work()"| Scheduler
+    Scheduler -->|"2. 返回全局分块坐标 (m, n, l)"| CTA0
+    Scheduler -->|"2. 返回全局分块坐标 (m, n, l)"| CTA1
 ```
 
 `TileScheduler` 甚至支持根据 GPU 的 L2 Cache 大小，自动规划计算瓦片的**空间遍历曲线（如希尔伯特曲线、蛇形曲线）**，让不同 CTA 尽量在同一时间复用同一块 L2 缓存中的数据，使有效内存带宽再提升 15%~30%！

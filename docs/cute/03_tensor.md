@@ -313,10 +313,10 @@ CuTe 提炼出了三大经久不衰的核心分区模式：
 
 ```mermaid
 graph TD
-    MacroTensor["宏观全局大张量 (Global Tensor)"] -->|local_tile / inner_partition| CTATile["CTA 级别局部张量 (CTA Tile)"]
-    CTATile -->|local_partition / outer_partition| ThreadTile["线程私有网格 (Thread Partition)"]
-    CTATile -->|TV Layout Composition| TVTensor["线程-数值张量 (Thread-Value Tensor)"]
-    TVTensor -->|tv_tensor(threadIdx.x, _)| RegFragment["线程专属寄存器分片 (Register Fragments)"]
+    MacroTensor["宏观全局大张量 (Global Tensor)"] -->|"local_tile / inner_partition"| CTATile["CTA 级别局部张量 (CTA Tile)"]
+    CTATile -->|"local_partition / outer_partition"| ThreadTile["线程私有网格 (Thread Partition)"]
+    CTATile -->|"TV Layout Composition"| TVTensor["线程-数值张量 (Thread-Value Tensor)"]
+    TVTensor -->|"tv_tensor(threadIdx.x, _)"| RegFragment["线程专属寄存器分片 (Register Fragments)"]
 ```
 
 ---

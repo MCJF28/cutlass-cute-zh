@@ -96,17 +96,17 @@ CuTe 解决多维非对齐边界裁剪的数学终极法门，被称为**“影�
 ```mermaid
 flowchart TD
     subgraph RealWorld["物理数据世界 (Data Domain)"]
-        RealData["真实全局张量 mA<br/>Shape: (M, K) | GMEM 指针"] -->|local_tile| RealTile["CTA 瓦片 gA<br/>Shape: (bM, bK, k)"]
-        RealTile -->|local_partition| RealFrag["线程数据分片 tAgA<br/>Shape: (THR_M, THR_K, k)"]
+        RealData["真实全局张量 mA<br/>Shape: (M, K) | GMEM 指针"] -->|"local_tile"| RealTile["CTA 瓦片 gA<br/>Shape: (bM, bK, k)"]
+        RealTile -->|"local_partition"| RealFrag["线程数据分片 tAgA<br/>Shape: (THR_M, THR_K, k)"]
     end
 
     subgraph ShadowWorld["代数影子世界 (Coordinate Domain)"]
-        Identity["恒等坐标张量 cA = make_identity_tensor(shape(mA))<br/>(m, k) -> (m, k) 映射自身"] -->|local_tile (镜像同步)| ShadowTile["影子 CTA 瓦片 cta_cA<br/>Shape: (bM, bK, k)"]
-        ShadowTile -->|local_partition (镜像同步)| ShadowFrag["影子线程坐标分片 tAcA<br/>Shape: (THR_M, THR_K, k)"]
+        Identity["恒等坐标张量 cA = make_identity_tensor(shape(mA))<br/>(m, k) ➔ (m, k) 映射自身"] -->|"local_tile (镜像同步)"| ShadowTile["影子 CTA 瓦片 cta_cA<br/>Shape: (bM, bK, k)"]
+        ShadowTile -->|"local_partition (镜像同步)"| ShadowFrag["影子线程坐标分片 tAcA<br/>Shape: (THR_M, THR_K, k)"]
     end
 
     RealFrag & ShadowFrag --> EvalPred["逐元素比较: elem_less(tAcA, shape(mA))"]
-    EvalPred --> PredMask["布尔谓词张量 tApA<br/>make_tensor<bool>"]
+    EvalPred --> PredMask["布尔谓词张量 tApA<br/>make_tensor&lt;bool&gt;"]
     PredMask & RealFrag --> CopyIf["cute::copy_if(tApA, tAgA, sA)"]
 ```
 

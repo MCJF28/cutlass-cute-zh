@@ -261,13 +261,13 @@ using CLayout = Layout<Shape <Shape <_2,  _2, _2>, Shape <_2, _2,  _2>>,
 ```mermaid
 graph LR
     subgraph Traditional["传统架构 (Ampere SM80)"]
-        SMEM1["共享内存 SMEM"] -->|ldmatrix / ld.shared| RMEM["线程寄存器堆 (32 线程)"]
-        RMEM -->|mma.sync 指令| TensorCore1["Tensor Core (Warp 级)"]
+        SMEM1["共享内存 SMEM"] -->|"ldmatrix / ld.shared"| RMEM["线程寄存器堆 (32 线程)"]
+        RMEM -->|"mma.sync 指令"| TensorCore1["Tensor Core (Warp 级)"]
     end
 
     subgraph HopperWGMMA["Hopper 架构 (SM90 WGMMA)"]
-        SMEM2["共享内存 SMEM (TMA 写入)"] -->|异步硬件直读 (Zero Register Load)| TensorCore2["Tensor Core (Warpgroup 级)"]
-        TensorCore2 -->|异步计算完成| WGMMA_ACC["累加器专用寄存器"]
+        SMEM2["共享内存 SMEM (TMA 写入)"] -->|"异步硬件直读 (Zero Register Load)"| TensorCore2["Tensor Core (Warpgroup 级)"]
+        TensorCore2 -->|"异步计算完成"| WGMMA_ACC["累加器专用寄存器"]
     end
 ```
 
